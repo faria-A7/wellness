@@ -26,11 +26,13 @@ export default function Home() {
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-emerald-700">Wellness</h1>
-          <div className="flex gap-8 text-gray-600">
-            <a href="#" className="hover:text-emerald-700 font-medium">Home</a>
-            <a href="#" className="hover:text-emerald-700 font-medium">Dashboard</a>
-            <a href="#" className="hover:text-emerald-700 font-medium">Habits</a>
-            <a href="#" className="hover:text-emerald-700 font-medium">About</a>
+    
+          {/* Simple placeholder – we'll replace with Clerk's UserButton later */}
+          <div className="flex gap-6">
+            <a href="/sign-in" className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition">Sign In</a>
+            <a href="/sign-up" className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition">
+              Get Started
+            </a>
           </div>
         </div>
       </nav>
