@@ -1,9 +1,10 @@
-# Wellness
+# WELLNESS
 
 Full-stack wellness / habit tracking application (personal learning project 2026)
 
 ## Current status
 - Next.js 15 (App Router)
+- Clerk Authentication
 - TypeScript
 - Tailwind CSS
 - Running locally with `npm run dev`
