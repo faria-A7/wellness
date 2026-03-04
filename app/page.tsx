@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 
 export default function Home() {
   const [mood, setMood] = useState<string>('');
+  const { user } = useUser();
 
   const moods = [
     { emoji: '😍', label: 'Amazing' },
@@ -38,8 +39,19 @@ export default function Home() {
             </SignedOut>
 
             <SignedIn>
-              <Link href="/dashboard" className="font-medium text-emerald-700 hover:text-emerald-800">Dashboard</Link>
-              <UserButton />
+              <div className="flex items-center gap-6">
+                <Link href="/dashboard" className="font-medium text-emerald-700 hover:underline">
+                  Dashboard
+                </Link>
+
+                {/* Show user name + avatar */}
+                <div className="flex items-center gap-3">
+                  <span className="hidden sm:inline text-gray-700 font-medium">
+                    Hi, {user?.firstName || 'User'}
+                  </span>
+                  <UserButton />
+                </div>
+              </div>
             </SignedIn>
           </div>
         </div>
