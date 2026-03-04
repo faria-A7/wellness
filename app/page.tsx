@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export default function Home() {
   const [mood, setMood] = useState<string>('');
@@ -22,17 +23,23 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-      {/* Navbar */}
+      {/* Navbar with real auth */}
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-emerald-700">Wellness</h1>
+          <h1 className="text-3xl font-bold text-emerald-700">WELLNESS</h1>
     
-          {/* Simple placeholder – we'll replace with Clerk's UserButton later */}
-          <div className="flex gap-6">
-            <a href="/sign-in" className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition">Sign In</a>
-            <a href="/sign-up" className="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition">
-              Get Started
-            </a>
+          <div className="flex items-center gap-6">
+            <SignedOut>
+              <a href="/sign-in" className="bg-emerald-600 text-green px-6 py-2.5 rounded-xl hover:text-emerald-700 font-medium">Sign In</a>
+              <a href="/sign-up" className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition font-medium">
+                Get Started Free
+              </a>
+            </SignedOut>
+
+            <SignedIn>
+              <a href="/dashboard" className="font-medium text-emerald-700 hover:underline">Dashboard</a>
+              <UserButton />
+            </SignedIn>
           </div>
         </div>
       </nav>
