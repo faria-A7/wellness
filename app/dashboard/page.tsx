@@ -2,7 +2,14 @@
 
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+type MoodEntry = {
+  id: number;
+  mood: string;
+  note: string | null;
+  createdAt: string;
+};
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -10,6 +17,9 @@ export default function Dashboard() {
   const [note, setNote] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [history, setHistory] = useState<MoodEntry[]>([]);
+  const [historyLoading, setHistoryLoading] = useState<boolean>(false);
+  const [historyError, setHistoryError] = useState<string>('');
 
   const moods = [
     { emoji: '😍', label: 'Amazing' },
@@ -25,6 +35,40 @@ export default function Dashboard() {
     { emoji: '🤒', label: 'Unwell' },
     { emoji: '🔥', label: 'Motivated' },
   ];
+
+  const moodLookup = new Map(moods.map((item) => [item.label, item.emoji]));
+
+  const fetchHistory = useCallback(async () => {
+    if (!user) {
+      setHistory([]);
+      return;
+    }
+
+    setHistoryLoading(true);
+    setHistoryError('');
+
+    try {
+      const response = await fetch('/api/log-mood', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const data = await response.json();
+
+      if (response.ok && Array.isArray(data.moods)) {
+        setHistory(data.moods);
+      } else {
+        setHistoryError(data.error || 'Failed to load mood history.');
+      }
+    } catch (error) {
+      setHistoryError('Failed to load mood history. Please try again.');
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    void fetchHistory();
+  }, [fetchHistory]);
 
   const handleLogMood = async () => {
     if (!selectedMood) {
@@ -58,6 +102,7 @@ export default function Dashboard() {
         setMessage(`Mood logged successfully: ${selectedMood}${note ? ` - "${note}"` : ''}`);
         setSelectedMood('');
         setNote('');
+        await fetchHistory();
       } else {
         setMessage(`Error: ${data.error || 'Something went wrong'}`);
       }
@@ -136,7 +181,45 @@ export default function Dashboard() {
 
             <div className="bg-white rounded-3xl shadow-xl p-8 md:p-10">
               <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Recent Moods</h2>
-              <p className="text-gray-500">Your logged moods will appear here soon...</p>
+              {historyLoading && (
+                <p className="text-gray-500">Loading your mood history...</p>
+              )}
+
+              {!historyLoading && historyError && (
+                <p className="text-red-600">{historyError}</p>
+              )}
+
+              {!historyLoading && !historyError && history.length === 0 && (
+                <p className="text-gray-500">No moods logged yet. Log your first one above.</p>
+              )}
+
+              {!historyLoading && !historyError && history.length > 0 && (
+                <ul className="divide-y divide-gray-200">
+                  {history.map((entry) => {
+                    const emoji = moodLookup.get(entry.mood) || '🙂';
+                    const timestamp = new Date(entry.createdAt).toLocaleString();
+
+                    return (
+                      <li key={entry.id} className="flex items-start gap-4 py-4">
+                        <div className="text-3xl" aria-hidden="true">
+                          {emoji}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="text-lg font-semibold text-gray-900">{entry.mood}</span>
+                            <span className="text-sm text-gray-500">{timestamp}</span>
+                          </div>
+                          {entry.note ? (
+                            <p className="text-gray-700 mt-1">{entry.note}</p>
+                          ) : (
+                            <p className="text-gray-400 mt-1 italic">No note</p>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           </div>
         </div>

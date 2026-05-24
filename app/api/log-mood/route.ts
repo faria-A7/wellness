@@ -2,6 +2,27 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma'; // Import our new singleton
 import { NextResponse } from 'next/server';
 
+export async function GET() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const moods = await prisma.mood.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+
+    return NextResponse.json({ moods });
+  } catch (error) {
+    console.error('Database Error:', error);
+    return NextResponse.json({ error: 'Failed to load mood history' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   console.log('API route /log-mood was hit');
 
