@@ -32,10 +32,10 @@ export default function Home() {
     
           <div className="flex items-center gap-6">
             <SignedOut>
-              <a href="/sign-in" className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:text-emerald-700 font-medium">Sign In</a>
-              <a href="/sign-up" className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition font-medium">
+              <Link href="/sign-in" className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:text-emerald-700 font-medium">Sign In</Link>
+              <Link href="/sign-up" className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl hover:bg-emerald-700 transition font-medium">
                 Get Started Free
-              </a>
+              </Link>
             </SignedOut>
 
             <SignedIn>
