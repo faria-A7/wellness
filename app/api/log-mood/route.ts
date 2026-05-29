@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma'; // Import our new singleton
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -10,13 +10,32 @@ export async function GET() {
   }
 
   try {
-    const moods = await prisma.mood.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-    });
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(Number(searchParams.get('page')) || 1, 1);
+    const limit = Math.min(Math.max(Number(searchParams.get('limit')) || 5, 1), 20);
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json({ moods });
+    const [moods, total] = await prisma.$transaction([
+      prisma.mood.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.mood.count({
+        where: { userId },
+      }),
+    ]);
+
+    return NextResponse.json({
+      moods,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1),
+      },
+    });
   } catch (error) {
     console.error('Database Error:', error);
     return NextResponse.json({ error: 'Failed to load mood history' }, { status: 500 });
