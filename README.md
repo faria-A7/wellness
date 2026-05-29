@@ -31,7 +31,10 @@ Learning modern Next.js, Clerk auth, Prisma + Supabase (PostgreSQL)
 - Simple stats (most common mood, mood trend over time)
 - Habit tracker section
 - Dark mode toggle
+- Weekly email summaries
 - Polish UI/UX (colors per mood, calendar view, etc.)
+- Advanced Log Interactions (CRUD Completion)
+- AI Insights
 
 ## How to run locally
 
