@@ -23,15 +23,14 @@ Learning modern Next.js, Clerk auth, Prisma + Supabase (PostgreSQL)
 - Client-side mood selection + optional note input
 - Server-side saving of moods to Supabase (with userId verification)
 - Basic success/error feedback on logging
+- Display list of recent moods on dashboard - Pagination(fetch from DB)
+- Deployed to Vercel
 
 ## Planned next steps
 
-- Display list of recent moods on dashboard (fetch from DB)
 - Simple stats (most common mood, mood trend over time)
-- One mood per day restriction (optional)
 - Habit tracker section
 - Dark mode toggle
-- Deployment to Vercel
 - Polish UI/UX (colors per mood, calendar view, etc.)
 
 ## How to run locally
