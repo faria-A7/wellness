@@ -195,7 +195,7 @@ export default function Dashboard() {
               </section>
 
               <section className="bg-gray-950 text-white rounded-3xl shadow-xl shadow-sky-100/70 overflow-hidden">
-                <div className="h-full p-6 md:p-8 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.35),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(14,165,233,0.28),_transparent_40%)] flex flex-col justify-between gap-8">
+                <div className="h-full p-6 md:p-8 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.35),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.28),transparent_40%)] flex flex-col justify-between gap-8">
                   <div>
                     <p className="text-emerald-200 font-medium mb-3">Mood Statistics</p>
                     <h2 className="text-3xl font-bold mb-4">See the bigger picture.</h2>
