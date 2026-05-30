@@ -27,6 +27,11 @@ export default function Dashboard() {
   const [historyPage, setHistoryPage] = useState<number>(1);
   const [historyTotal, setHistoryTotal] = useState<number>(0);
   const [historyTotalPages, setHistoryTotalPages] = useState<number>(1);
+  const [editingEntry, setEditingEntry] = useState<MoodEntry | null>(null);
+  const [editNote, setEditNote] = useState<string>('');
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+  const [deleteTarget, setDeleteTarget] = useState<MoodEntry | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const fetchHistory = useCallback(async (page: number) => {
     if (!user) {
@@ -113,6 +118,103 @@ export default function Dashboard() {
       setMessage('Failed to log mood. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openEditModal = (entry: MoodEntry) => {
+    setEditingEntry(entry);
+    setEditNote(entry.note ?? '');
+    setMessage('');
+  };
+
+  const closeEditModal = () => {
+    if (editLoading) return;
+
+    setEditingEntry(null);
+    setEditNote('');
+  };
+
+  const handleUpdateNote = async () => {
+    if (!editingEntry) return;
+
+    setEditLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/log-mood', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: editingEntry.id,
+          note: editNote.trim() || null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('Mood note updated successfully.');
+        setEditingEntry(null);
+        setEditNote('');
+        await fetchHistory(historyPage);
+      } else {
+        setMessage(`Error: ${data.error || 'Could not update that note'}`);
+      }
+    } catch {
+      setMessage('Failed to update mood note. Please try again.');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const openDeleteModal = (entry: MoodEntry) => {
+    setDeleteTarget(entry);
+    setMessage('');
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteLoading) return;
+
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteLog = async () => {
+    if (!deleteTarget) return;
+
+    setDeleteLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/log-mood', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: deleteTarget.id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const nextTotal = Math.max(historyTotal - 1, 0);
+        const nextTotalPages = Math.max(Math.ceil(nextTotal / HISTORY_PAGE_SIZE), 1);
+        const nextPage = Math.min(historyPage, nextTotalPages);
+
+        setMessage('Mood log deleted successfully.');
+        setDeleteTarget(null);
+
+        if (nextPage !== historyPage) {
+          setHistoryPage(nextPage);
+        } else {
+          await fetchHistory(nextPage);
+        }
+      } else {
+        setMessage(`Error: ${data.error || 'Could not delete that log'}`);
+      }
+    } catch {
+      setMessage('Failed to delete mood log. Please try again.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -242,7 +344,7 @@ export default function Dashboard() {
                       const timestamp = new Date(entry.createdAt).toLocaleString();
 
                       return (
-                        <li key={entry.id} className="flex items-start gap-4 py-4">
+                        <li key={entry.id} className="flex flex-col sm:flex-row sm:items-start gap-4 py-5">
                           <div className="text-3xl" aria-hidden="true">
                             {mood.emoji}
                           </div>
@@ -256,6 +358,22 @@ export default function Dashboard() {
                             ) : (
                               <p className="text-gray-400 mt-1 italic">No note</p>
                             )}
+                          </div>
+                          <div className="flex items-center gap-2 sm:pt-1">
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(entry)}
+                              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+                            >
+                              Edit Note
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal(entry)}
+                              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-100"
+                            >
+                              Delete Log
+                            </button>
                           </div>
                         </li>
                       );
@@ -290,6 +408,107 @@ export default function Dashboard() {
               )}
             </section>
           </div>
+
+          {editingEntry && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 px-4 py-6">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-note-title"
+                className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
+              >
+                <div className="mb-5">
+                  <p className="text-sm font-medium text-emerald-600">Update previous thought</p>
+                  <h2 id="edit-note-title" className="mt-1 text-2xl font-semibold text-gray-950">
+                    Edit Note
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500">
+                    {editingEntry.mood} logged on {new Date(editingEntry.createdAt).toLocaleString()}
+                  </p>
+                </div>
+
+                <label className="mb-2 block text-sm font-medium text-gray-700" htmlFor="edit-note">
+                  Note
+                </label>
+                <textarea
+                  id="edit-note"
+                  value={editNote}
+                  onChange={(event) => setEditNote(event.target.value)}
+                  placeholder="Add what you want to remember about this mood..."
+                  className="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  rows={5}
+                />
+
+                <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={closeEditModal}
+                    disabled={editLoading}
+                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUpdateNote}
+                    disabled={editLoading}
+                    className="rounded-2xl bg-emerald-600 px-5 py-3 font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {editLoading ? 'Saving...' : 'Save Note'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {deleteTarget && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 px-4 py-6">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-log-title"
+                className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+              >
+                <div className="mb-6">
+                  <p className="text-sm font-medium text-red-600">This cannot be undone</p>
+                  <h2 id="delete-log-title" className="mt-1 text-2xl font-semibold text-gray-950">
+                    Delete this mood log?
+                  </h2>
+                  <p className="mt-3 text-gray-600">
+                    You are about to remove the {deleteTarget.mood} entry from{' '}
+                    {new Date(deleteTarget.createdAt).toLocaleString()}.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                  {deleteTarget.note ? (
+                    <p className="text-sm text-gray-700">{deleteTarget.note}</p>
+                  ) : (
+                    <p className="text-sm italic text-gray-400">No note</p>
+                  )}
+                </div>
+
+                <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={closeDeleteModal}
+                    disabled={deleteLoading}
+                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Keep Log
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteLog}
+                    disabled={deleteLoading}
+                    className="rounded-2xl bg-red-600 px-5 py-3 font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {deleteLoading ? 'Deleting...' : 'Delete Log'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </SignedIn>
 

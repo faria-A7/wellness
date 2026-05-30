@@ -75,3 +75,77 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to log mood' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const id = Number(body.id);
+    const note = typeof body.note === 'string' ? body.note.trim() : null;
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return NextResponse.json({ error: 'Invalid mood log' }, { status: 400 });
+    }
+
+    const existingMood = await prisma.mood.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!existingMood) {
+      return NextResponse.json({ error: 'Mood log not found' }, { status: 404 });
+    }
+
+    const updatedMood = await prisma.mood.update({
+      where: { id },
+      data: {
+        note: note || null,
+      },
+    });
+
+    return NextResponse.json({ success: true, mood: updatedMood });
+  } catch (error) {
+    console.error('Database Error:', error);
+    return NextResponse.json({ error: 'Failed to update mood note' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const id = Number(body.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return NextResponse.json({ error: 'Invalid mood log' }, { status: 400 });
+    }
+
+    const existingMood = await prisma.mood.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!existingMood) {
+      return NextResponse.json({ error: 'Mood log not found' }, { status: 404 });
+    }
+
+    await prisma.mood.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Database Error:', error);
+    return NextResponse.json({ error: 'Failed to delete mood log' }, { status: 500 });
+  }
+}
