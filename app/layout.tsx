@@ -11,6 +11,13 @@ export const metadata: Metadata = {
   description: "Personal wellness tracking app",
 };
 
+const themeScript = `
+  try {
+    const theme = localStorage.getItem('wellness-theme');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  } catch {}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        </head>
         <body className={inter.className}>{children}</body>
       </html>
     </ClerkProvider>

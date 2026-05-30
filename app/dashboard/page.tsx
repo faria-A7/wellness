@@ -221,31 +221,39 @@ export default function Dashboard() {
   return (
     <>
       <SignedIn>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-sky-50 to-white p-5 md:p-8">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-sky-50 to-white p-5 transition-colors dark:from-slate-950 dark:via-slate-900 dark:to-gray-950 md:p-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-950 mb-3">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-950 mb-3 dark:text-white">
                   Welcome back, {user?.firstName || 'User'} 👋
                 </h1>
-                <p className="text-lg md:text-xl text-gray-600">
+                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
                   Log today&apos;s mood quickly, then review the recent notes you have captured.
                 </p>
               </div>
-              <Link
-                href="/dashboard/statistics"
-                className="self-start md:self-auto bg-gray-950 text-white px-5 py-3 rounded-2xl font-medium transition hover:bg-gray-800"
-              >
-                View Mood Statistics
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/dashboard/settings"
+                  className="self-start rounded-2xl border border-gray-300 bg-white px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-50 dark:border-white/10 dark:bg-slate-900 dark:text-gray-100 dark:hover:bg-slate-800 md:self-auto"
+                >
+                  Settings
+                </Link>
+                <Link
+                  href="/dashboard/statistics"
+                  className="self-start md:self-auto bg-gray-950 text-white px-5 py-3 rounded-2xl font-medium transition hover:bg-gray-800 dark:bg-emerald-500 dark:text-gray-950 dark:hover:bg-emerald-400"
+                >
+                  View Mood Statistics
+                </Link>
+              </div>
             </div>
 
             <div className="grid lg:grid-cols-[1fr_0.65fr] gap-6 mb-6">
-              <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/60 border border-white p-6 md:p-8">
-                <h2 className="text-2xl font-semibold mb-2 text-gray-900">
+              <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/60 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
+                <h2 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
                   How are you feeling right now?
                 </h2>
-                <p className="text-gray-500 mb-6">Choose a mood and add a little context if you want.</p>
+                <p className="text-gray-500 mb-6 dark:text-gray-300">Choose a mood and add a little context if you want.</p>
 
                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mb-7">
                   {MOODS.map((item) => (
@@ -254,8 +262,8 @@ export default function Dashboard() {
                       onClick={() => setSelectedMood(item.label)}
                       className={`text-4xl md:text-5xl p-4 rounded-2xl transition-all hover:-translate-y-1 ${
                         selectedMood === item.label
-                          ? 'bg-emerald-100 ring-4 ring-emerald-400 shadow-md'
-                          : 'bg-gray-50 hover:bg-emerald-50'
+                          ? 'bg-emerald-100 ring-4 ring-emerald-400 shadow-md dark:bg-emerald-500/20'
+                          : 'bg-gray-50 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-slate-700'
                       }`}
                       title={item.label}
                     >
@@ -265,14 +273,14 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mb-5">
-                  <label className="block text-gray-700 font-medium mb-2">
+                  <label className="block text-gray-700 font-medium mb-2 dark:text-gray-200">
                     Add a note (optional)
                   </label>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="e.g. Felt calmer after a walk..."
-                    className="w-full p-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-700 placeholder:text-gray-400 bg-gray-50"
+                    className="w-full p-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-700 placeholder:text-gray-400 bg-gray-50 dark:border-white/10 dark:bg-slate-950 dark:text-gray-100 dark:placeholder:text-gray-500"
                     rows={3}
                   />
                 </div>
@@ -289,7 +297,7 @@ export default function Dashboard() {
 
                 {message && (
                   <p className={`mt-5 text-center text-base font-medium ${
-                    message.includes('Error') || message.includes('Failed') ? 'text-red-600' : 'text-emerald-700'
+                    message.includes('Error') || message.includes('Failed') ? 'text-red-600 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-300'
                   }`}>
                     {message}
                   </p>
@@ -315,30 +323,30 @@ export default function Dashboard() {
               </section>
             </div>
 
-            <section className="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-white p-6 md:p-8">
+            <section className="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h2 className="text-2xl font-semibold text-gray-950">Your Mood History</h2>
+                <h2 className="text-2xl font-semibold text-gray-950 dark:text-white">Your Mood History</h2>
                 {!historyLoading && !historyError && historyTotal > 0 && (
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     Page {historyPage} of {historyTotalPages} · {historyTotal} total
                   </span>
                 )}
               </div>
               {historyLoading && (
-                <p className="text-gray-500">Loading your mood history...</p>
+                <p className="text-gray-500 dark:text-gray-400">Loading your mood history...</p>
               )}
 
               {!historyLoading && historyError && (
-                <p className="text-red-600">{historyError}</p>
+                <p className="text-red-600 dark:text-red-400">{historyError}</p>
               )}
 
               {!historyLoading && !historyError && history.length === 0 && (
-                <p className="text-gray-500">No moods logged yet. Log your first one above.</p>
+                <p className="text-gray-500 dark:text-gray-400">No moods logged yet. Log your first one above.</p>
               )}
 
               {!historyLoading && !historyError && history.length > 0 && (
                 <>
-                  <ul className="divide-y divide-gray-200">
+                  <ul className="divide-y divide-gray-200 dark:divide-white/10">
                     {history.map((entry) => {
                       const mood = getMoodMeta(entry.mood);
                       const timestamp = new Date(entry.createdAt).toLocaleString();
@@ -350,27 +358,27 @@ export default function Dashboard() {
                           </div>
                           <div className="flex-1">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span className="text-lg font-semibold text-gray-900">{entry.mood}</span>
-                              <span className="text-sm text-gray-500">{timestamp}</span>
+                              <span className="text-lg font-semibold text-gray-900 dark:text-white">{entry.mood}</span>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">{timestamp}</span>
                             </div>
                             {entry.note ? (
-                              <p className="text-gray-700 mt-1">{entry.note}</p>
+                              <p className="text-gray-700 mt-1 dark:text-gray-300">{entry.note}</p>
                             ) : (
-                              <p className="text-gray-400 mt-1 italic">No note</p>
+                              <p className="text-gray-400 mt-1 italic dark:text-gray-500">No note</p>
                             )}
                           </div>
                           <div className="flex items-center gap-2 sm:pt-1">
                             <button
                               type="button"
                               onClick={() => openEditModal(entry)}
-                              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+                              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200 dark:hover:bg-emerald-400/20"
                             >
                               Edit Note
                             </button>
                             <button
                               type="button"
                               onClick={() => openDeleteModal(entry)}
-                              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-100"
+                              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-100 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-300 dark:hover:bg-red-400/20"
                             >
                               Delete Log
                             </button>
@@ -381,7 +389,7 @@ export default function Dashboard() {
                   </ul>
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-6">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Showing {(historyPage - 1) * HISTORY_PAGE_SIZE + 1}-
                       {Math.min(historyPage * HISTORY_PAGE_SIZE, historyTotal)} of {historyTotal}
                     </p>
@@ -390,7 +398,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => setHistoryPage((page) => Math.max(page - 1, 1))}
                         disabled={historyPage === 1}
-                        className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-white/10 dark:text-gray-200 dark:hover:bg-slate-800"
                       >
                         Previous
                       </button>
@@ -398,7 +406,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => setHistoryPage((page) => Math.min(page + 1, historyTotalPages))}
                         disabled={historyPage >= historyTotalPages}
-                        className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-white/10 dark:text-gray-200 dark:hover:bg-slate-800"
                       >
                         Next
                       </button>
@@ -415,19 +423,19 @@ export default function Dashboard() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="edit-note-title"
-                className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"
+                className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-900"
               >
                 <div className="mb-5">
-                  <p className="text-sm font-medium text-emerald-600">Update previous thought</p>
-                  <h2 id="edit-note-title" className="mt-1 text-2xl font-semibold text-gray-950">
+                  <p className="text-sm font-medium text-emerald-600 dark:text-emerald-300">Update previous thought</p>
+                  <h2 id="edit-note-title" className="mt-1 text-2xl font-semibold text-gray-950 dark:text-white">
                     Edit Note
                   </h2>
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     {editingEntry.mood} logged on {new Date(editingEntry.createdAt).toLocaleString()}
                   </p>
                 </div>
 
-                <label className="mb-2 block text-sm font-medium text-gray-700" htmlFor="edit-note">
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="edit-note">
                   Note
                 </label>
                 <textarea
@@ -435,7 +443,7 @@ export default function Dashboard() {
                   value={editNote}
                   onChange={(event) => setEditNote(event.target.value)}
                   placeholder="Add what you want to remember about this mood..."
-                  className="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  className="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:border-white/10 dark:bg-slate-950 dark:text-gray-100 dark:placeholder:text-gray-500"
                   rows={5}
                 />
 
@@ -444,7 +452,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={closeEditModal}
                     disabled={editLoading}
-                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:text-gray-200 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </button>
@@ -467,24 +475,24 @@ export default function Dashboard() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="delete-log-title"
-                className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+                className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-900"
               >
                 <div className="mb-6">
-                  <p className="text-sm font-medium text-red-600">This cannot be undone</p>
-                  <h2 id="delete-log-title" className="mt-1 text-2xl font-semibold text-gray-950">
+                  <p className="text-sm font-medium text-red-600 dark:text-red-300">This cannot be undone</p>
+                  <h2 id="delete-log-title" className="mt-1 text-2xl font-semibold text-gray-950 dark:text-white">
                     Delete this mood log?
                   </h2>
-                  <p className="mt-3 text-gray-600">
+                  <p className="mt-3 text-gray-600 dark:text-gray-300">
                     You are about to remove the {deleteTarget.mood} entry from{' '}
                     {new Date(deleteTarget.createdAt).toLocaleString()}.
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-slate-950">
                   {deleteTarget.note ? (
-                    <p className="text-sm text-gray-700">{deleteTarget.note}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{deleteTarget.note}</p>
                   ) : (
-                    <p className="text-sm italic text-gray-400">No note</p>
+                    <p className="text-sm italic text-gray-400 dark:text-gray-500">No note</p>
                   )}
                 </div>
 
@@ -493,7 +501,7 @@ export default function Dashboard() {
                     type="button"
                     onClick={closeDeleteModal}
                     disabled={deleteLoading}
-                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-2xl border border-gray-300 px-5 py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:text-gray-200 dark:hover:bg-slate-800"
                   >
                     Keep Log
                   </button>

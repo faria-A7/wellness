@@ -94,34 +94,42 @@ export default function MoodStatisticsPage() {
   return (
     <>
       <SignedIn>
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-sky-50 to-white p-5 md:p-8">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-sky-50 to-white p-5 transition-colors dark:from-slate-950 dark:via-slate-900 dark:to-gray-950 md:p-8">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
               <div>
-                <Link href="/dashboard" className="text-sm font-medium text-emerald-700 hover:text-emerald-800">
+                <Link href="/dashboard" className="text-sm font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-300 dark:hover:text-emerald-200">
                   Back to dashboard
                 </Link>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-950 mt-3 mb-3">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-950 mt-3 mb-3 dark:text-white">
                   Mood Statistics
                 </h1>
-                <p className="text-lg md:text-xl text-gray-600">
+                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
                   Review your mood patterns, averages, and weekly highlights.
                 </p>
               </div>
-              <span className="self-start md:self-auto px-4 py-2 rounded-full bg-gray-950 text-emerald-50 text-sm font-medium">
-                Score range 1-5
-              </span>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/dashboard/settings"
+                  className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-50 dark:border-white/10 dark:bg-slate-900 dark:text-gray-100 dark:hover:bg-slate-800"
+                >
+                  Settings
+                </Link>
+                <span className="self-start md:self-auto px-4 py-2 rounded-full bg-gray-950 text-emerald-50 text-sm font-medium dark:bg-emerald-500 dark:text-gray-950">
+                  Score range 1-5
+                </span>
+              </div>
             </div>
 
             {statsLoading && (
-              <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/60 border border-white p-8">
-                <p className="text-gray-500">Loading your mood statistics...</p>
+              <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/60 border border-white p-8 dark:border-white/10 dark:bg-slate-900 dark:shadow-none">
+                <p className="text-gray-500 dark:text-gray-400">Loading your mood statistics...</p>
               </section>
             )}
 
             {!statsLoading && statsError && (
-              <section className="bg-white rounded-3xl shadow-xl shadow-red-100/60 border border-white p-8">
-                <p className="text-red-600">{statsError}</p>
+              <section className="bg-white rounded-3xl shadow-xl shadow-red-100/60 border border-white p-8 dark:border-white/10 dark:bg-slate-900 dark:shadow-none">
+                <p className="text-red-600 dark:text-red-400">{statsError}</p>
               </section>
             )}
 
@@ -164,18 +172,18 @@ export default function MoodStatisticsPage() {
                 </section>
 
                 <div className="grid lg:grid-cols-[1.35fr_0.65fr] gap-6 mb-6">
-                  <section className="bg-white rounded-3xl shadow-xl shadow-sky-100/60 border border-white p-6 md:p-8">
+                  <section className="bg-white rounded-3xl shadow-xl shadow-sky-100/60 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
                     <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                       <div>
-                        <h2 className="text-2xl font-semibold text-gray-950">Mood trend</h2>
-                        <p className="text-gray-500 mt-1">Average daily mood score over time.</p>
+                        <h2 className="text-2xl font-semibold text-gray-950 dark:text-white">Mood trend</h2>
+                        <p className="text-gray-500 mt-1 dark:text-gray-400">Average daily mood score over time.</p>
                       </div>
-                      <div className="inline-flex rounded-2xl bg-gray-100 p-1">
+                      <div className="inline-flex rounded-2xl bg-gray-100 p-1 dark:bg-slate-950">
                         <button
                           type="button"
                           onClick={() => setTrendRange('weekly')}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                            trendRange === 'weekly' ? 'bg-white text-emerald-700 shadow-sm' : 'text-gray-500'
+                            trendRange === 'weekly' ? 'bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'
                           }`}
                         >
                           Weekly
@@ -184,7 +192,7 @@ export default function MoodStatisticsPage() {
                           type="button"
                           onClick={() => setTrendRange('monthly')}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                            trendRange === 'monthly' ? 'bg-white text-emerald-700 shadow-sm' : 'text-gray-500'
+                            trendRange === 'monthly' ? 'bg-white text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'
                           }`}
                         >
                           Monthly
@@ -237,45 +245,45 @@ export default function MoodStatisticsPage() {
                     </div>
                   </section>
 
-                  <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 border border-white p-6 md:p-8">
-                    <p className="text-sm font-medium text-emerald-700 mb-2">Weekly highlight</p>
-                    <h2 className="text-2xl font-semibold text-gray-950">
+                  <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
+                    <p className="text-sm font-medium text-emerald-700 mb-2 dark:text-emerald-300">Weekly highlight</p>
+                    <h2 className="text-2xl font-semibold text-gray-950 dark:text-white">
                       {stats.bestDayThisWeek
                         ? `${stats.bestDayThisWeek.day} was your best day`
                         : 'No moods logged this week yet'}
                     </h2>
-                    <p className="text-gray-500 mt-3">
+                    <p className="text-gray-500 mt-3 dark:text-gray-400">
                       {stats.bestDayThisWeek
                         ? `${stats.bestDayThisWeek.mood} mood average from ${stats.bestDayThisWeek.count} log${stats.bestDayThisWeek.count === 1 ? '' : 's'}.`
                         : 'Your best-day insight will appear once you log a mood this week.'}
                     </p>
-                    <div className="mt-8 rounded-2xl bg-emerald-50 p-5">
-                      <p className="text-sm text-emerald-700 font-medium">Quick read</p>
-                      <p className="text-gray-700 mt-2">
+                    <div className="mt-8 rounded-2xl bg-emerald-50 p-5 dark:bg-emerald-400/10">
+                      <p className="text-sm text-emerald-700 font-medium dark:text-emerald-300">Quick read</p>
+                      <p className="text-gray-700 mt-2 dark:text-gray-300">
                         Your monthly average is currently <span className="font-semibold">{stats.averageMoodThisMonth}</span>.
                       </p>
                     </div>
                   </section>
                 </div>
 
-                <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 border border-white p-6 md:p-8">
-                  <h2 className="text-2xl font-semibold text-gray-950 mb-5">Mood mix</h2>
+                <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/50 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
+                  <h2 className="text-2xl font-semibold text-gray-950 mb-5 dark:text-white">Mood mix</h2>
                   {stats.distribution.length === 0 && (
-                    <p className="text-gray-500">Your mood mix will show up once you start logging moods.</p>
+                    <p className="text-gray-500 dark:text-gray-400">Your mood mix will show up once you start logging moods.</p>
                   )}
                   {stats.distribution.length > 0 && (
                     <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
                       {stats.distribution.map((item) => (
                         <div key={item.mood}>
                           <div className="flex items-center justify-between gap-3 mb-2">
-                            <span className="font-medium text-gray-800">
+                            <span className="font-medium text-gray-800 dark:text-gray-200">
                               {item.emoji} {item.mood}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
                               {item.count} · {item.percentage}%
                             </span>
                           </div>
-                          <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="h-3 rounded-full bg-gray-100 overflow-hidden dark:bg-slate-950">
                             <div
                               className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500"
                               style={{ width: `${item.percentage}%` }}
