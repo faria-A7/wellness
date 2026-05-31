@@ -58,6 +58,9 @@ export default function MoodStatisticsPage() {
   const [statsLoading, setStatsLoading] = useState<boolean>(false);
   const [statsError, setStatsError] = useState<string>('');
   const [trendRange, setTrendRange] = useState<'weekly' | 'monthly'>('weekly');
+  const [exportLoading, setExportLoading] = useState<boolean>(false);
+  const [exportMessage, setExportMessage] = useState<string>('');
+  const [exportError, setExportError] = useState<string>('');
 
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
@@ -85,6 +88,43 @@ export default function MoodStatisticsPage() {
   useEffect(() => {
     void fetchStats();
   }, [fetchStats]);
+
+  const handleExportCsv = useCallback(async () => {
+    setExportLoading(true);
+    setExportMessage('');
+    setExportError('');
+
+    try {
+      const response = await fetch('/api/export-moods', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || 'Failed to export mood data.');
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get('Content-Disposition') ?? '';
+      const filename = contentDisposition.match(/filename="(.+)"/)?.[1]
+        ?? `wellness-moods-${new Date().toISOString().slice(0, 10)}.csv`;
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+      setExportMessage('CSV download started.');
+    } catch (error) {
+      setExportError(error instanceof Error ? error.message : 'Failed to export mood data.');
+    } finally {
+      setExportLoading(false);
+    }
+  }, []);
 
   const chartData = useMemo(() => {
     if (!stats) return [];
@@ -116,11 +156,33 @@ export default function MoodStatisticsPage() {
                 >
                   Settings
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleExportCsv}
+                  disabled={exportLoading || statsLoading || !stats || stats.totalLogged === 0}
+                  className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:text-gray-950 dark:hover:bg-emerald-400"
+                  title={stats?.totalLogged === 0 ? 'Log a mood before exporting.' : 'Download mood data as CSV.'}
+                >
+                  {exportLoading ? 'Preparing CSV...' : 'Export CSV'}
+                </button>
                 <span className="self-start md:self-auto px-4 py-2 rounded-full bg-gray-950 text-emerald-50 text-sm font-medium dark:bg-emerald-500 dark:text-gray-950">
                   Score range 1-5
                 </span>
               </div>
             </div>
+
+            {(exportMessage || exportError || (!statsLoading && stats?.totalLogged === 0)) && (
+              <div
+                aria-live="polite"
+                className={`mb-6 rounded-2xl border px-4 py-3 text-sm font-medium ${
+                  exportError
+                    ? 'border-red-200 bg-red-50 text-red-600 dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-300'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200'
+                }`}
+              >
+                {exportError || exportMessage || 'Log at least one mood to enable CSV export.'}
+              </div>
+            )}
 
             {statsLoading && (
               <section className="bg-white rounded-3xl shadow-xl shadow-emerald-100/60 border border-white p-8 dark:border-white/10 dark:bg-slate-900 dark:shadow-none">
