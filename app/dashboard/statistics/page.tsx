@@ -99,10 +99,10 @@ export default function MoodStatisticsPage() {
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
               <div>
                 <Link href="/dashboard" className="text-sm font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-300 dark:hover:text-emerald-200">
-                  Back to dashboard
+                  Go back to dashboard
                 </Link>
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-950 mt-3 mb-3 dark:text-white">
-                  Mood Statistics
+                  Your Mood Statistics
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
                   Review your mood patterns, averages, and weekly highlights.
