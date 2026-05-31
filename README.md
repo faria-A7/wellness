@@ -46,7 +46,7 @@ Learning modern Next.js, Clerk auth, Prisma + Supabase (PostgreSQL).
 
 - Word limitations for logging a mood
 - Profile settings (name, email, profile picture)
-- Habit tracker section 
+- Habit tracker section (daily habits, completion tracking)
 - Weekly email summaries
 - Calendar view + UI polish
 - AI insights

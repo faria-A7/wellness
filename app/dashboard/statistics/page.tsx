@@ -105,6 +105,7 @@ export default function MoodStatisticsPage() {
                   Mood Statistics
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+                  
                   Review your mood patterns, averages, and weekly highlights.
                 </p>
               </div>
