@@ -43,6 +43,9 @@ export default function Home() {
                 <Link href="/dashboard" className="font-medium text-emerald-700 hover:underline">
                   Dashboard
                 </Link>
+                <Link href="/habits" className="font-medium text-emerald-700 hover:underline">
+                  Habits
+                </Link>
 
                 {/* Show user name + avatar */}
                 <div className="flex items-center gap-3">

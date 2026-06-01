@@ -151,6 +151,12 @@ export default function MoodStatisticsPage() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Link
+                  href="/habits"
+                  className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200 dark:hover:bg-emerald-400/20"
+                >
+                  Habits
+                </Link>
+                <Link
                   href="/dashboard/settings"
                   className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-50 dark:border-white/10 dark:bg-slate-900 dark:text-gray-100 dark:hover:bg-slate-800"
                 >

@@ -234,6 +234,12 @@ export default function Dashboard() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Link
+                  href="/habits"
+                  className="self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 font-medium text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200 dark:hover:bg-emerald-400/20 md:self-auto"
+                >
+                  Habits
+                </Link>
+                <Link
                   href="/dashboard/settings"
                   className="self-start rounded-2xl border border-gray-300 bg-white px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-50 dark:border-white/10 dark:bg-slate-900 dark:text-gray-100 dark:hover:bg-slate-800 md:self-auto"
                 >

@@ -15,3 +15,29 @@ model Mood {
   note      String?  // optional
   createdAt DateTime @default(now())
 }
+
+model Habit {
+  id          Int                @id @default(autoincrement())
+  userId      String
+  name        String
+  emoji       String
+  frequency   String             @default("Daily")
+  color       String             @default("emerald")
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  completions HabitCompletion[]
+
+  @@index([userId])
+}
+
+model HabitCompletion {
+  id          Int      @id @default(autoincrement())
+  habitId     Int
+  userId      String
+  date        String
+  completedAt DateTime @default(now())
+  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([userId, date])
+}
