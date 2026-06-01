@@ -14,6 +14,21 @@ type MoodEntry = {
 };
 
 const HISTORY_PAGE_SIZE = 5;
+const NOTE_WORD_LIMIT = 200;
+
+const countWords = (value: string) => {
+  return value.trim().split(/\s+/).filter(Boolean).length;
+};
+
+const limitWords = (value: string) => {
+  const words = value.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length <= NOTE_WORD_LIMIT) {
+    return value;
+  }
+
+  return words.slice(0, NOTE_WORD_LIMIT).join(' ');
+};
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -32,6 +47,7 @@ export default function Dashboard() {
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteTarget, setDeleteTarget] = useState<MoodEntry | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const noteWordCount = countWords(note);
 
   const fetchHistory = useCallback(async (page: number) => {
     if (!user) {
@@ -284,11 +300,23 @@ export default function Dashboard() {
                   </label>
                   <textarea
                     value={note}
-                    onChange={(e) => setNote(e.target.value)}
+                    onChange={(e) => setNote(limitWords(e.target.value))}
                     placeholder="e.g. Felt calmer after a walk..."
                     className="w-full p-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-700 placeholder:text-gray-400 bg-gray-50 dark:border-white/10 dark:bg-slate-950 dark:text-gray-100 dark:placeholder:text-gray-500"
                     rows={3}
                   />
+                  <div className="mt-2 flex items-center justify-between gap-3 text-sm">
+                    <span className="text-gray-400 dark:text-gray-500">
+                      Keep it brief: up to {NOTE_WORD_LIMIT} words.
+                    </span>
+                    <span className={`font-medium ${
+                      noteWordCount >= NOTE_WORD_LIMIT
+                        ? 'text-amber-600 dark:text-amber-300'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {noteWordCount}/{NOTE_WORD_LIMIT} words
+                    </span>
+                  </div>
                 </div>
 
                 <button
