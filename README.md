@@ -1,84 +1,131 @@
 # WELLNESS
 
-Full-stack mood & wellness tracking application (personal learning project, 2026).
-Learning modern Next.js, Clerk auth, Prisma + Supabase (PostgreSQL).
+Full-stack mood and wellness tracking app built as a personal learning project in 2026.
+
+Track moods, build healthy routines, review trends, and export your history from one calm dashboard.
 
 ## Preview
 
 ![Homepage](public/screenshots/homepage.png)
 
-This is a preview of the Homepage of WELLNESS.
+This is a preview of the WELLNESS homepage.
 
-## Current status (June 2026)
+## Tech Stack
 
-- **Next.js 16** (App Router) + **React 19**
-- **TypeScript**
-- **Tailwind CSS v4**
-- **Clerk Authentication** (sign-up, sign-in, protected routes, profile updates)
-- **Prisma ORM** + **Supabase** PostgreSQL (cloud-hosted)
-- Mood logging with optional notes (user-scoped)
-- Dashboard with mood history pagination, edit, and delete
-- Mood statistics dashboard with weekly/monthly trends, averages, and distribution
-- Habit tracker with daily check-ins, completion history, monthly progress, and mood insights
+<p>
+  <img src="https://img.shields.io/badge/Next.js-16.1.6-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 16.1.6" />
+  <img src="https://img.shields.io/badge/React-19.2.3-61DAFB?style=for-the-badge&logo=react&logoColor=000000" alt="React 19.2.3" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
+  <img src="https://img.shields.io/badge/Clerk-6.39.0-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk 6.39.0" />
+  <img src="https://img.shields.io/badge/Prisma-5.18.0-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma 5.18.0" />
+  <img src="https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase PostgreSQL" />
+  <img src="https://img.shields.io/badge/Recharts-3.8.1-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Recharts 3.8.1" />
+  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel deployment" />
+</p>
+
+<details>
+  <summary><strong>Version slide note</strong></summary>
+
+| Tool | Version / Usage |
+| --- | --- |
+| Next.js | `16.1.6`, App Router |
+| React | `19.2.3` |
+| TypeScript | `^5` |
+| Tailwind CSS | `^4` |
+| Clerk | `@clerk/nextjs ^6.39.0` |
+| Prisma | `5.18.0` |
+| Supabase | PostgreSQL database hosting |
+| Recharts | `^3.8.1` |
+| Vercel | Deployment platform |
+
+</details>
+
+## Project Status
+
+WELLNESS is a working full-stack app with authentication, protected pages, mood logging, habit tracking, statistics, CSV export, and settings.
+
+## Highlights
+
+- Secure sign-up, sign-in, session management, and protected routes with Clerk
+- Personal mood logging with optional notes and user-scoped history
+- Dashboard with pagination, edit actions, and delete actions
+- Habit tracker with daily check-ins, optimistic updates, completion history, and mood insights
+- Statistics page with weekly and monthly trends, averages, distribution, and best-day insight
 - CSV export for mood history
-- Settings page with local dark mode toggle, profile info, and profile picture upload
-- API routes for mood logging, habit tracking, statistics, and export
-- Deployed to Vercel
+- Settings page with local dark mode, profile updates, and profile picture upload
+- API routes for moods, habits, statistics, and export
+- Cloud PostgreSQL database powered by Supabase and Prisma
 
-## Features implemented
+## Core Features
 
-- Public landing page with quick mood picker and auth CTA
-- Secure authentication & session management with Clerk
-- Protected `/dashboard` route for logging moods
-- Client-side mood selection + optional note input
-- Word limits for mood notes (e.g., 200 characters)
-- Server-side saving of moods with Clerk-verified user ID
-- Mood history list with pagination, edit note, and delete log actions
-- Habit tracker with:
-  - Add/edit/delete routines from a dedicated protected page
-  - Emoji presets plus free-form emoji input
-  - Color tagging across eight visual themes
-  - Daily check-off and undo actions with optimistic UI updates
-  - Daily progress summary, percentage meter, and all-done state
-  - Monthly completion rate shown on each habit card
-  - Seven-day completion history strip for quick streak review
-  - Mood insight cards that compare average mood on completed vs missed days
-  - Confirmation dialog before deleting a habit and its completion history
-  - User-scoped saving through Clerk-verified sessions
-- Statistics page with:
-  - Average mood scores (overall + this month)
-  - Most common mood and full distribution
-  - Best day this week insight
-  - Weekly and monthly trend charts (Recharts)
-- CSV export of mood history from the statistics page
-- Settings page with:
-  - Local dark mode toggle (persisted in local storage)
-  - Profile name update and profile picture upload via Clerk
-- API endpoints:
-  - `POST /api/log-mood` (create mood)
-  - `GET /api/log-mood?page=1&limit=5` (paginate mood history)
-  - `PATCH /api/log-mood` (update mood note)
-  - `DELETE /api/log-mood` (delete mood log)
-  - `GET /api/habits?date=YYYY-MM-DD` (load habits, completion state, and insights)
-  - `POST /api/habits` (create a habit)
-  - `PATCH /api/habits` (update a habit)
-  - `DELETE /api/habits` (delete a habit and its completion history)
-  - `POST /api/habit-completion` (toggle a habit for a specific day)
-  - `GET /api/mood-stats` (aggregated stats + trends)
-  - `GET /api/export-moods` (download CSV)
+### Mood Tracking
 
-## Data model
+- Quick mood picker from the public landing page
+- Protected `/dashboard` route for personal mood logs
+- Optional mood notes with a character limit
+- Mood history pagination
+- Edit and delete actions for previous mood logs
 
-- Mood: `id`, `userId`, `mood`, `note`, `createdAt`
-- Habit: `id`, `userId`, `name`, `emoji`, `frequency`, `color`, `createdAt`, `updatedAt`
-- HabitCompletion: `id`, `habitId`, `userId`, `date`, `completedAt`
+### Habit Tracking
 
-## Planned next steps
+- Add, edit, and delete routines from a protected habit page
+- Emoji presets and free-form emoji input
+- Eight color themes for visual organization
+- Daily check-off and undo actions
+- Daily progress summary and completion meter
+- Monthly completion rate on each habit card
+- Seven-day completion history strip
+- Mood insight cards comparing completed vs missed days
+- Confirmation dialog before deleting a habit and its completion history
 
-- Calendar view + UI polish
-- AI insights
+### Insights And Export
 
-## How to run locally
+- Average mood score overall and for the current month
+- Most common mood and full mood distribution
+- Weekly and monthly trend charts
+- Best day this week insight
+- CSV mood-history export from the statistics page
+
+### Settings
+
+- Local dark mode toggle persisted in local storage
+- Profile name update through Clerk
+- Profile picture upload through Clerk
+
+## API Endpoints
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/log-mood` | Create a mood log |
+| `GET` | `/api/log-mood?page=1&limit=5` | Paginate mood history |
+| `PATCH` | `/api/log-mood` | Update a mood note |
+| `DELETE` | `/api/log-mood` | Delete a mood log |
+| `GET` | `/api/habits?date=YYYY-MM-DD` | Load habits, completion state, and insights |
+| `POST` | `/api/habits` | Create a habit |
+| `PATCH` | `/api/habits` | Update a habit |
+| `DELETE` | `/api/habits` | Delete a habit and completion history |
+| `POST` | `/api/habit-completion` | Toggle a habit for a specific day |
+| `GET` | `/api/mood-stats` | Load aggregated mood stats and trends |
+| `GET` | `/api/export-moods` | Download mood history as CSV |
+
+## Data Model
+
+| Model | Fields |
+| --- | --- |
+| `Mood` | `id`, `userId`, `mood`, `note`, `createdAt` |
+| `Habit` | `id`, `userId`, `name`, `emoji`, `frequency`, `color`, `createdAt`, `updatedAt` |
+| `HabitCompletion` | `id`, `habitId`, `userId`, `date`, `completedAt` |
+
+## Roadmap
+
+- Calendar view
+- Extra UI polish
+- AI-powered wellness insights
+
+## Run Locally
+
+Clone the project and install dependencies:
 
 ```bash
 git clone https://github.com/faria-A7/wellness.git
@@ -86,7 +133,7 @@ cd wellness
 npm install
 ```
 
-Create a `.env` file with:
+Create a `.env` file:
 
 ```env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
@@ -95,8 +142,12 @@ DATABASE_URL=...
 DIRECT_URL=...
 ```
 
-Then start the dev server:
+Start the development server:
 
 ```bash
 npm run dev
 ```
+
+## AUTHOR
+
+Built by [faria-A7](https://github.com/faria-A7).
