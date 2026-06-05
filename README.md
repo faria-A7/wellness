@@ -93,6 +93,12 @@ WELLNESS is a working full-stack app with authentication, protected pages, mood 
 - Profile name update through Clerk
 - Profile picture upload through Clerk
 
+### AI Mood Insights
+
+- AI-generated insights on mood patterns and habit correlations
+- Powered by Hugging Face's Open-Orca 120B model
+- Custom prompt engineering for personalized feedback
+
 ## API Endpoints
 
 | Method | Endpoint | Purpose |
@@ -121,7 +127,7 @@ WELLNESS is a working full-stack app with authentication, protected pages, mood 
 
 - Calendar view
 - Extra UI polish
-- AI-powered wellness insights
+
 
 ## Run Locally
 
