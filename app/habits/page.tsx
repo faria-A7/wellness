@@ -9,6 +9,14 @@ type LastSevenDay = {
   completed: boolean;
 };
 
+type WeekDay = {
+  date: string;
+  label: string;
+  dayOfMonth: string;
+  isToday: boolean;
+  isFuture: boolean;
+};
+
 type MoodInsight = {
   completedAverage: number;
   completedMood: string;
@@ -132,6 +140,48 @@ const getLocalDateKey = () => {
   return `${year}-${month}-${day}`;
 };
 
+const parseLocalDateKey = (dateKey: string) => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+
+  return new Date(year, month - 1, day);
+};
+
+const toLocalDateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+const addLocalDays = (dateKey: string, days: number) => {
+  const date = parseLocalDateKey(dateKey);
+
+  date.setDate(date.getDate() + days);
+
+  return toLocalDateKey(date);
+};
+
+const getCurrentWeekDays = (todayKey: string): WeekDay[] => {
+  const today = parseLocalDateKey(todayKey);
+  const day = today.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const mondayKey = addLocalDays(todayKey, mondayOffset);
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = parseLocalDateKey(addLocalDays(mondayKey, index));
+    const dateKey = toLocalDateKey(date);
+
+    return {
+      date: dateKey,
+      label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      dayOfMonth: String(date.getDate()),
+      isToday: dateKey === todayKey,
+      isFuture: dateKey > todayKey,
+    };
+  });
+};
+
 const getErrorMessage = async (response: Response, fallback: string) => {
   const data = await response.json().catch(() => null);
 
@@ -140,6 +190,7 @@ const getErrorMessage = async (response: Response, fallback: string) => {
 
 export default function HabitsPage() {
   const todayKey = useMemo(() => getLocalDateKey(), []);
+  const currentWeekDays = useMemo(() => getCurrentWeekDays(todayKey), [todayKey]);
   const todayLabel = useMemo(() => (
     new Date().toLocaleDateString('en-US', {
       weekday: 'long',
@@ -260,7 +311,13 @@ export default function HabitsPage() {
     setPageError('');
     setHabits((currentHabits) => currentHabits.map((currentHabit) => (
       currentHabit.id === habit.id
-        ? { ...currentHabit, completedToday: completed }
+        ? {
+            ...currentHabit,
+            completedToday: completed,
+            lastSevenDays: currentHabit.lastSevenDays.map((day) => (
+              day.date === todayKey ? { ...day, completed } : day
+            )),
+          }
         : currentHabit
     )));
 
@@ -285,7 +342,13 @@ export default function HabitsPage() {
     } catch (error) {
       setHabits((currentHabits) => currentHabits.map((currentHabit) => (
         currentHabit.id === habit.id
-          ? { ...currentHabit, completedToday: habit.completedToday }
+          ? {
+              ...currentHabit,
+              completedToday: habit.completedToday,
+              lastSevenDays: currentHabit.lastSevenDays.map((day) => (
+                day.date === todayKey ? { ...day, completed: habit.completedToday } : day
+              )),
+            }
           : currentHabit
       )));
       setPageError(error instanceof Error ? error.message : 'Failed to update habit.');
@@ -573,6 +636,107 @@ export default function HabitsPage() {
                       </article>
                     );
                   })}
+                </div>
+              )}
+            </section>
+
+            <section className="mt-6 rounded-3xl border border-white bg-white p-6 shadow-xl shadow-sky-100/50 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
+              <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-sky-700 dark:text-sky-300">Weekly overview</p>
+                  <h2 className="mt-1 text-2xl font-semibold text-gray-950 dark:text-white">Current Week</h2>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Mon to Sun habit consistency</p>
+              </div>
+
+              {habits.length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">
+                  Add habits to see your weekly consistency here.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <div className="min-w-[720px]">
+                    <div className="grid grid-cols-[minmax(10rem,1.6fr)_repeat(7,minmax(4rem,1fr))] gap-2">
+                      <div className="rounded-2xl bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-500 dark:bg-slate-950 dark:text-gray-400">
+                        Habit
+                      </div>
+                      {currentWeekDays.map((day) => (
+                        <div
+                          key={day.date}
+                          className={`rounded-2xl px-3 py-3 text-center ${
+                            day.isToday
+                              ? 'bg-sky-600 text-white shadow-lg shadow-sky-100 dark:bg-sky-400 dark:text-slate-950 dark:shadow-none'
+                              : day.isFuture
+                                ? 'bg-gray-50 text-gray-400 dark:bg-slate-950 dark:text-gray-600'
+                                : 'bg-gray-50 text-gray-700 dark:bg-slate-950 dark:text-gray-200'
+                          }`}
+                        >
+                          <p className="text-sm font-semibold">{day.label}</p>
+                          <p className={`mt-1 text-xs ${day.isToday ? 'text-sky-50 dark:text-slate-800' : 'text-gray-400 dark:text-gray-500'}`}>
+                            {day.dayOfMonth}
+                          </p>
+                        </div>
+                      ))}
+
+                      {habits.map((habit) => {
+                        const styles = getColorStyles(habit.color);
+                        const completedDates = new Set(
+                          habit.lastSevenDays
+                            .filter((day) => day.completed)
+                            .map((day) => day.date),
+                        );
+                        const createdDateKey = habit.createdAt.slice(0, 10);
+
+                        return (
+                          <div key={habit.id} className="contents">
+                            <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-white/10 dark:bg-slate-950">
+                              <span className="text-2xl" aria-hidden="true">{habit.emoji}</span>
+                              <span className="truncate font-semibold text-gray-800 dark:text-gray-100">{habit.name}</span>
+                            </div>
+
+                            {currentWeekDays.map((day) => {
+                              const isInactive = day.date < createdDateKey;
+                              const isCompleted = completedDates.has(day.date);
+                              const label = day.isFuture
+                                ? 'Future day'
+                                : isInactive
+                                  ? 'Not tracked yet'
+                                  : isCompleted
+                                    ? 'Completed'
+                                    : 'Missed';
+
+                              return (
+                                <div
+                                  key={`${habit.id}-${day.date}`}
+                                  title={`${habit.name} on ${day.date}: ${label}`}
+                                  className={`flex h-16 items-center justify-center rounded-2xl border text-lg font-bold transition ${
+                                    day.isToday
+                                      ? 'border-sky-300 bg-sky-50 ring-2 ring-sky-200 dark:border-sky-400/40 dark:bg-sky-400/10 dark:ring-sky-400/20'
+                                      : 'border-gray-100 bg-white dark:border-white/10 dark:bg-slate-900'
+                                  } ${
+                                    day.isFuture || isInactive
+                                      ? 'text-gray-300 dark:text-gray-700'
+                                      : isCompleted
+                                        ? styles.text
+                                        : 'text-rose-500 dark:text-rose-300'
+                                  }`}
+                                  aria-label={`${habit.name} on ${day.label}: ${label}`}
+                                >
+                                  {day.isFuture || isInactive ? (
+                                    <span className="h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-700" aria-hidden="true" />
+                                  ) : isCompleted ? (
+                                    <span aria-hidden="true">✓</span>
+                                  ) : (
+                                    <span aria-hidden="true">×</span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
             </section>
