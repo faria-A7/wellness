@@ -13,6 +13,16 @@ type MoodEntry = {
   createdAt: string;
 };
 
+type AiInsightPreview = {
+  id: number;
+  rangeLabel: string;
+  createdAt: string;
+  result: {
+    mainInsight?: string;
+    summary?: string;
+  };
+};
+
 const HISTORY_PAGE_SIZE = 5;
 const NOTE_WORD_LIMIT = 200;
 
@@ -47,6 +57,8 @@ export default function Dashboard() {
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [deleteTarget, setDeleteTarget] = useState<MoodEntry | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [latestInsight, setLatestInsight] = useState<AiInsightPreview | null>(null);
+  const [insightLoading, setInsightLoading] = useState<boolean>(false);
   const noteWordCount = countWords(note);
 
   const fetchHistory = useCallback(async (page: number) => {
@@ -88,6 +100,35 @@ export default function Dashboard() {
   useEffect(() => {
     void fetchHistory(historyPage);
   }, [fetchHistory, historyPage]);
+
+  useEffect(() => {
+    if (!user) {
+      setLatestInsight(null);
+      return;
+    }
+
+    const fetchLatestInsight = async () => {
+      setInsightLoading(true);
+
+      try {
+        const response = await fetch('/api/ai-insights?limit=1', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await response.json();
+
+        if (response.ok && Array.isArray(data.insights)) {
+          setLatestInsight(data.insights[0] ?? null);
+        }
+      } catch {
+        setLatestInsight(null);
+      } finally {
+        setInsightLoading(false);
+      }
+    };
+
+    void fetchLatestInsight();
+  }, [user]);
 
   const handleLogMood = async () => {
     if (!selectedMood) {
@@ -256,6 +297,12 @@ export default function Dashboard() {
                   Habits
                 </Link>
                 <Link
+                  href="/insights"
+                  className="self-start rounded-2xl border border-sky-200 bg-sky-50 px-5 py-3 font-medium text-sky-700 transition hover:bg-sky-100 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-200 dark:hover:bg-sky-400/20 md:self-auto"
+                >
+                  AI Insights
+                </Link>
+                <Link
                   href="/dashboard/settings"
                   className="self-start rounded-2xl border border-gray-300 bg-white px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-50 dark:border-white/10 dark:bg-slate-900 dark:text-gray-100 dark:hover:bg-slate-800 md:self-auto"
                 >
@@ -338,23 +385,58 @@ export default function Dashboard() {
                 )}
               </section>
 
-              <section className="bg-gray-950 text-white rounded-3xl shadow-xl shadow-sky-100/70 overflow-hidden">
-                <div className="h-full p-6 md:p-8 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.35),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.28),transparent_40%)] flex flex-col justify-between gap-8">
-                  <div>
-                    <p className="text-emerald-200 font-medium mb-3">Mood Statistics</p>
-                    <h2 className="text-3xl font-bold mb-4">See the bigger picture.</h2>
-                    <p className="text-emerald-50 leading-7">
-                      Open your statistics page for average mood score, weekly and monthly trend charts, best-day insights, and your most common moods.
-                    </p>
+              <div className="grid gap-6">
+                <section className="rounded-3xl border border-white bg-white p-6 shadow-xl shadow-sky-100/50 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">
+                  <div className="mb-4 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-medium text-sky-700 dark:text-sky-300">AI Mood Insight</p>
+                      <h2 className="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">
+                        {latestInsight ? 'Latest reflection' : 'Ask for a deeper read'}
+                      </h2>
+                    </div>
+                    <span className="rounded-2xl bg-sky-50 px-3 py-2 text-2xl dark:bg-sky-400/10" aria-hidden="true">
+                      ✨
+                    </span>
                   </div>
+
+                  {insightLoading ? (
+                    <p className="text-gray-500 dark:text-gray-400">Checking your latest insight...</p>
+                  ) : latestInsight ? (
+                    <p className="line-clamp-4 leading-7 text-gray-600 dark:text-gray-300">
+                      {latestInsight.result.summary || latestInsight.result.mainInsight}
+                    </p>
+                  ) : (
+                    <p className="leading-7 text-gray-600 dark:text-gray-300">
+                      Generate an AI reflection from your mood notes and habits when you want a more personal pattern check.
+                    </p>
+                  )}
+
                   <Link
-                    href="/dashboard/statistics"
-                    className="inline-flex justify-center rounded-2xl bg-white text-gray-950 px-5 py-3 font-medium transition hover:bg-emerald-50"
+                    href="/insights"
+                    className="mt-6 inline-flex w-full justify-center rounded-2xl bg-sky-600 px-5 py-3 font-medium text-white transition hover:bg-sky-700 dark:bg-sky-400 dark:text-gray-950 dark:hover:bg-sky-300"
                   >
-                    Open Statistics
+                    View Full Insights
                   </Link>
-                </div>
-              </section>
+                </section>
+
+                <section className="bg-gray-950 text-white rounded-3xl shadow-xl shadow-sky-100/70 overflow-hidden">
+                  <div className="h-full p-6 md:p-8 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.35),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.28),transparent_40%)] flex flex-col justify-between gap-8">
+                    <div>
+                      <p className="text-emerald-200 font-medium mb-3">Mood Statistics</p>
+                      <h2 className="text-3xl font-bold mb-4">See the bigger picture.</h2>
+                      <p className="text-emerald-50 leading-7">
+                        Open your statistics page for average mood score, weekly and monthly trend charts, best-day insights, and your most common moods.
+                      </p>
+                    </div>
+                    <Link
+                      href="/dashboard/statistics"
+                      className="inline-flex justify-center rounded-2xl bg-white text-gray-950 px-5 py-3 font-medium transition hover:bg-emerald-50"
+                    >
+                      Open Statistics
+                    </Link>
+                  </div>
+                </section>
+              </div>
             </div>
 
             <section className="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-white p-6 transition-colors dark:border-white/10 dark:bg-slate-900 dark:shadow-none md:p-8">

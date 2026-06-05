@@ -41,3 +41,15 @@ model HabitCompletion {
   @@unique([habitId, date])
   @@index([userId, date])
 }
+
+model AiInsight {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  rangeLabel String
+  startDate  String
+  endDate    String
+  result     Json
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
