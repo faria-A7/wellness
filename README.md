@@ -123,11 +123,6 @@ WELLNESS is a working full-stack app with authentication, protected pages, mood 
 | `Habit` | `id`, `userId`, `name`, `emoji`, `frequency`, `color`, `createdAt`, `updatedAt` |
 | `HabitCompletion` | `id`, `habitId`, `userId`, `date`, `completedAt` |
 
-## Roadmap
-
-- Calendar view
-- Extra UI polish
-
 
 ## Run Locally
 
