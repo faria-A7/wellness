@@ -1,8 +1,8 @@
 # WELLNESS
 
-Full-stack mood and wellness tracking app built as a personal learning project in 2026.
+"Full-stack" - Mood and Wellness Tracking App built as a personal learning project in 2026.
 
-Track moods, build healthy routines, review trends, and export your history from one calm dashboard.
+Track moods, build healthy routines, review trends, and export your history from one calm dashboard with AI Insights.
 
 ## Preview
 
@@ -155,4 +155,4 @@ npm run dev
 
 ## AUTHOR
 
-Built by [faria-A7](https://github.com/faria-A7).
+Built by [Faria Akter - 2026](https://github.com/faria-A7).
